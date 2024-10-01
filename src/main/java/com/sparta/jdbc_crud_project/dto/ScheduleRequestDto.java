@@ -2,7 +2,7 @@ package com.sparta.jdbc_crud_project.dto;
 
 import lombok.Getter;
 
-import java.util.Date;
+import java.sql.Date;
 
 @Getter
 public class ScheduleRequestDto {
