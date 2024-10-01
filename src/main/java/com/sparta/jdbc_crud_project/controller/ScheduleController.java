@@ -4,15 +4,13 @@ import com.sparta.jdbc_crud_project.dto.ScheduleRequestDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleResponseDto;
 import com.sparta.jdbc_crud_project.entitiy.Schedule;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -25,6 +23,7 @@ public class ScheduleController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // 일정 생성
     @PostMapping("/schedule")
     public ScheduleResponseDto createSchedule(@RequestBody ScheduleRequestDto requestDto) {
         // RequestDto -> Entity
@@ -56,4 +55,21 @@ public class ScheduleController {
         return new ScheduleResponseDto(schedule);
     }
 
+    // 일정 조회
+    @GetMapping("/schedule")
+    public List<ScheduleResponseDto> getSchedules() {
+        // DB Check
+        String sql = "SELECT * FROM schedules";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Long id = rs.getLong("scheduleId");
+            String title = rs.getString("title");
+            String content = rs.getString("content");
+            Date postDate = rs.getDate("postDate");
+            Date updateDate = rs.getDate("updateDate");
+            String userName = rs.getString("userName");
+            String password = rs.getString("password");
+            return new ScheduleResponseDto(id, title, content, postDate, updateDate, userName, password);
+        });
+    }
 }
