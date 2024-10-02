@@ -2,6 +2,7 @@ package com.sparta.jdbc_crud_project.repository;
 
 import com.sparta.jdbc_crud_project.dto.ScheduleRequestDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleResponseDto;
+import com.sparta.jdbc_crud_project.dto.ScheduleSearchCriteria;
 import com.sparta.jdbc_crud_project.entity.Schedule;
 import com.sparta.jdbc_crud_project.exception.InvalidPasswordException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +25,7 @@ public class ScheduleRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // 일정 추가
     public ScheduleResponseDto save(ScheduleRequestDto scheduleRequestDto) {
         LocalDateTime now = LocalDateTime.now();
         String sql = "INSERT INTO SCHEDULE (title, content, postDate, updatedDate, userName, password) VALUES (?, ?, ?, ?, ?, ?)";
@@ -37,17 +40,41 @@ public class ScheduleRepository {
         return new ScheduleResponseDto(new Schedule(scheduleRequestDto));
     }
 
-
+    // 단건 일정 조회
     public ScheduleResponseDto findById(Long scheduleId) {
         String sql = "SELECT * FROM SCHEDULE WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, new ScheduleRowMapper(), scheduleId);
     }
 
-    public List<ScheduleResponseDto> findAll() {
-        String sql = "SELECT * FROM SCHEDULE";
-        return jdbcTemplate.query(sql, new ScheduleRowMapper());
+    // 전체 일정 조회
+    public List<ScheduleResponseDto> findAll(ScheduleSearchCriteria criteria) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM SCHEDULE WHERE 1=1");
+
+        if (criteria.getUpdatedDate() != null) {
+            sql.append(" AND DATE(updatedDate) = ?");
+        }
+        if (criteria.getUserName() != null) {
+            sql.append(" AND userName = ?");
+        }
+
+        sql.append(" ORDER BY updatedDate DESC");
+
+        return jdbcTemplate.query(sql.toString(), new ScheduleRowMapper(), getParams(criteria));
     }
 
+    private Object[] getParams(ScheduleSearchCriteria criteria) {
+        if (criteria.getUpdatedDate() != null && criteria.getUserName() != null) {
+            return new Object[]{LocalDate.parse(criteria.getUpdatedDate()), criteria.getUserName()};
+        } else if (criteria.getUpdatedDate() != null) {
+            return new Object[]{LocalDate.parse(criteria.getUpdatedDate())};
+        } else if (criteria.getUserName() != null) {
+            return new Object[]{criteria.getUserName()};
+        } else {
+            return new Object[]{};
+        }
+    }
+
+    // 일정 수정
     public ScheduleResponseDto update(ScheduleRequestDto scheduleRequestDto) {
 
         String sqlCheckPassword = "SELECT password FROM SCHEDULE WHERE id = ?";
@@ -70,6 +97,7 @@ public class ScheduleRepository {
         return new ScheduleResponseDto(new Schedule(scheduleRequestDto));
     }
 
+    // 일정 삭제
     public void delete(Long scheduleId) {
         String sql = "DELETE FROM SCHEDULE WHERE id = ?";
         jdbcTemplate.update(sql, scheduleId);

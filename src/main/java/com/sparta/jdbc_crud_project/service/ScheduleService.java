@@ -2,6 +2,7 @@ package com.sparta.jdbc_crud_project.service;
 
 import com.sparta.jdbc_crud_project.dto.ScheduleRequestDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleResponseDto;
+import com.sparta.jdbc_crud_project.dto.ScheduleSearchCriteria;
 import com.sparta.jdbc_crud_project.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +24,8 @@ public class ScheduleService {
         return scheduleRepository.findById(scheduleId);
     }
 
-    public List<ScheduleResponseDto> getAllSchedules() {
-        return scheduleRepository.findAll();
+    public List<ScheduleResponseDto> getAllSchedules(ScheduleSearchCriteria criteria) {
+        return scheduleRepository.findAll(criteria);
     }
 
     public ScheduleResponseDto updateSchedule(ScheduleRequestDto scheduleRequestDto) {

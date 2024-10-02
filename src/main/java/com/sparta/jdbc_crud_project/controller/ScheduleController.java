@@ -3,6 +3,7 @@ package com.sparta.jdbc_crud_project.controller;
 import com.sparta.jdbc_crud_project.dto.ErrorResponseDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleRequestDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleResponseDto;
+import com.sparta.jdbc_crud_project.dto.ScheduleSearchCriteria;
 import com.sparta.jdbc_crud_project.exception.InvalidPasswordException;
 import com.sparta.jdbc_crud_project.service.ScheduleService;
 import org.springframework.http.HttpStatus;
@@ -38,8 +39,14 @@ public class ScheduleController {
 
     // 전체 일정 조회
     @GetMapping
-    public ResponseEntity<List<ScheduleResponseDto>> getAllSchedules() {
-        List<ScheduleResponseDto> schedules = scheduleService.getAllSchedules();
+    public ResponseEntity<List<ScheduleResponseDto>> getAllSchedules(
+            @RequestParam(required = false) String updatedDate,
+            @RequestParam(required = false) String userName) {
+        ScheduleSearchCriteria criteria = new ScheduleSearchCriteria();
+        criteria.setUpdatedDate(updatedDate);
+        criteria.setUserName(userName);
+
+        List<ScheduleResponseDto> schedules = scheduleService.getAllSchedules(criteria);
         return ResponseEntity.ok().body(schedules);
     }
 
