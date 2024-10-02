@@ -2,7 +2,6 @@ package com.sparta.jdbc_crud_project.repository;
 
 import com.sparta.jdbc_crud_project.dto.ScheduleRequestDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleResponseDto;
-import com.sparta.jdbc_crud_project.dto.ScheduleUpdateRequestDto;
 import com.sparta.jdbc_crud_project.entity.Schedule;
 import com.sparta.jdbc_crud_project.exception.InvalidPasswordException;
 import org.springframework.jdbc.core.JdbcTemplate;

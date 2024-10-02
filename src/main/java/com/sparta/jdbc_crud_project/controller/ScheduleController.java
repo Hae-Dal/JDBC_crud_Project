@@ -3,7 +3,6 @@ package com.sparta.jdbc_crud_project.controller;
 import com.sparta.jdbc_crud_project.dto.ErrorResponseDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleRequestDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleResponseDto;
-import com.sparta.jdbc_crud_project.dto.ScheduleUpdateRequestDto;
 import com.sparta.jdbc_crud_project.exception.InvalidPasswordException;
 import com.sparta.jdbc_crud_project.service.ScheduleService;
 import org.springframework.http.HttpStatus;
@@ -46,10 +45,10 @@ public class ScheduleController {
 
     // 일정 수정
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateSchedule(@PathVariable Long id, @RequestBody ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
+    public ResponseEntity<?> updateSchedule(@PathVariable Long id, @RequestBody ScheduleRequestDto scheduleRequestDto) {
         try {
-            scheduleUpdateRequestDto.setId(id);
-            ScheduleResponseDto updatedSchedule = scheduleService.updateSchedule(scheduleUpdateRequestDto);
+            scheduleRequestDto.setId(id);
+            ScheduleResponseDto updatedSchedule = scheduleService.updateSchedule(scheduleRequestDto);
             return ResponseEntity.ok().body(updatedSchedule);
         } catch (InvalidPasswordException e) {
             ErrorResponseDto errorResponse = new ErrorResponseDto(e.getMessage());
