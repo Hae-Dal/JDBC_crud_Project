@@ -1,5 +1,6 @@
 package com.sparta.jdbc_crud_project.controller;
 
+import com.sparta.jdbc_crud_project.dto.ErrorResponseDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleRequestDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleResponseDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleSearchCriteria;
@@ -59,7 +60,8 @@ public class ScheduleController {
             ScheduleResponseDto updatedSchedule = scheduleService.updateSchedule(scheduleRequestDto);
             return ResponseEntity.ok().body(updatedSchedule);
         } catch (InvalidPasswordException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
+            ErrorResponseDto errorResponse = new ErrorResponseDto(e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
         }
     }
 

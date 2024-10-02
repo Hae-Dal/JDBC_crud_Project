@@ -102,7 +102,7 @@ public class ScheduleRepository {
         Integer count = jdbcTemplate.queryForObject(sqlCheckPassword, Integer.class, scheduleId, password);
 
         if (count == null || count == 0) {
-            throw new InvalidPasswordException("Invalid username or password");
+            throw new InvalidPasswordException("Invalid password");
         }
 
         String sql = "DELETE FROM SCHEDULE WHERE scheduleID = ?";
