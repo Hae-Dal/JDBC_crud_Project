@@ -3,6 +3,7 @@ package com.sparta.jdbc_crud_project.repository;
 import com.sparta.jdbc_crud_project.dto.ScheduleRequestDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleResponseDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleUpdateRequestDto;
+import com.sparta.jdbc_crud_project.entity.Schedule;
 import com.sparta.jdbc_crud_project.exception.InvalidPasswordException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -29,7 +30,12 @@ public class ScheduleRepository {
         jdbcTemplate.update(sql, scheduleRequestDto.getTitle(), scheduleRequestDto.getContent(), now, now, scheduleRequestDto.getUserName(), scheduleRequestDto.getPassword());
 
         Long scheduleId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Long.class);
-        return new ScheduleResponseDto(scheduleId, scheduleRequestDto.getTitle(), scheduleRequestDto.getContent(), now, now, scheduleRequestDto.getUserName(), scheduleRequestDto.getPassword());
+
+        scheduleRequestDto.setId(scheduleId);
+        scheduleRequestDto.setPostDate(now);
+        scheduleRequestDto.setUpdateDate(now);
+
+        return new ScheduleResponseDto(new Schedule(scheduleRequestDto));
     }
 
 
@@ -43,31 +49,26 @@ public class ScheduleRepository {
         return jdbcTemplate.query(sql, new ScheduleRowMapper());
     }
 
-    public ScheduleResponseDto update(ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
+    public ScheduleResponseDto update(ScheduleRequestDto scheduleRequestDto) {
 
         String sqlCheckPassword = "SELECT password FROM SCHEDULE WHERE id = ?";
-        String existingPassword = jdbcTemplate.queryForObject(sqlCheckPassword, String.class, scheduleUpdateRequestDto.getId());
+        String existingPassword = jdbcTemplate.queryForObject(sqlCheckPassword, String.class, scheduleRequestDto.getId());
 
-        if (!Objects.requireNonNull(existingPassword).equals(scheduleUpdateRequestDto.getPassword())) {
+        if (!Objects.requireNonNull(existingPassword).equals(scheduleRequestDto.getPassword())) {
             throw new InvalidPasswordException("Invalid password");
         }
 
         String sqlGetSchedule = "SELECT * FROM SCHEDULE WHERE id = ?";
-        ScheduleResponseDto existingSchedule = jdbcTemplate.queryForObject(sqlGetSchedule, new ScheduleRowMapper(), scheduleUpdateRequestDto.getId());
+        ScheduleResponseDto existingSchedule = jdbcTemplate.queryForObject(sqlGetSchedule, new ScheduleRowMapper(), scheduleRequestDto.getId());
 
         LocalDateTime now = LocalDateTime.now();
         String sql = "UPDATE SCHEDULE SET content = ?, updatedDate = ?, userName = ? WHERE id = ?";
-        jdbcTemplate.update(sql, scheduleUpdateRequestDto.getContent(), now, scheduleUpdateRequestDto.getUserName(), scheduleUpdateRequestDto.getId());
+        jdbcTemplate.update(sql, scheduleRequestDto.getContent(), now, scheduleRequestDto.getUserName(), scheduleRequestDto.getId());
 
-        return new ScheduleResponseDto(
-                Objects.requireNonNull(existingSchedule).getId(),
-                existingSchedule.getTitle(),
-                scheduleUpdateRequestDto.getContent(),
-                existingSchedule.getPostDate(),
-                now,
-                scheduleUpdateRequestDto.getUserName(),
-                existingSchedule.getPassword()
-        );
+        scheduleRequestDto.setId(Objects.requireNonNull(existingSchedule).getId());
+        scheduleRequestDto.setUpdateDate(now);
+
+        return new ScheduleResponseDto(new Schedule(scheduleRequestDto));
     }
 
     public void delete(Long scheduleId) {

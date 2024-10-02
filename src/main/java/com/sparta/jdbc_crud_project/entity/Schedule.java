@@ -18,4 +18,14 @@ public class Schedule {
     private LocalDateTime updateDate;
     private String userName;
     private String password;
+
+    public Schedule(ScheduleRequestDto requestDto) {
+        this.scheduleId = requestDto.getId();
+        this.title = requestDto.getTitle();
+        this.content = requestDto.getContent();
+        this.postDate = requestDto.getPostDate();
+        this.updateDate = requestDto.getUpdateDate();
+        this.userName = requestDto.getUserName();
+        this.password = requestDto.getPassword();
+    }
 }

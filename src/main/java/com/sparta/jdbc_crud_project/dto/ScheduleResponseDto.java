@@ -19,6 +19,16 @@ public class ScheduleResponseDto {
     private String userName;
     private String password;
 
+    public ScheduleResponseDto(Schedule schedule) {
+        this.id = schedule.getScheduleId();
+        this.title = schedule.getTitle();
+        this.content = schedule.getContent();
+        this.postDate = schedule.getPostDate();
+        this.updateDate = schedule.getUpdateDate();
+        this.userName = schedule.getUserName();
+        this.password = schedule.getPassword();
+    }
+
     public ScheduleResponseDto(Long id, String title, String content, LocalDateTime postDate, LocalDateTime updateDate, String userName, String password) {
         this.id = id;
         this.title = title;
