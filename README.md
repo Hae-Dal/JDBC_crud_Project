@@ -10,8 +10,8 @@ feat.내일배움 캠프
         - [x]  API명세서는 프로젝트 root(최상위) 경로의 `README.md` 에 작성
     - [x]  **ERD 작성하기**
         - [x]  ERD는 프로젝트 root(최상위) 경로의 `README.md` 에 첨부
-    - [ ] **SQL 작성하기**
-        - [ ] 설치한 데이터베이스(Mysql)에 ERD를 따라 테이블 생성
+    - [x] **SQL 작성하기**
+        - [x] 설치한 데이터베이스(Mysql)에 ERD를 따라 테이블 생성
 
 - 설계
     - API 명세서
@@ -42,12 +42,12 @@ feat.내일배움 캠프
             
       - **일정 조회**
         - HTTP Method : `GET`
-        - Endpoint : `/api/schedule/{scheduleId}`
+        - Endpoint : `/api/schedule/{id}`
         - Path Parameters
           - scheduleId (String) : 조회하려는 일정의 고유 ID
         - Request Syntax
           ```json
-            GET /api/schedule/{scheduleId} HTTP/1.1
+            GET /api/schedule/{id} HTTP/1.1
             Host: {localhost}
             Accept: application/json
         - Responses
@@ -68,7 +68,7 @@ feat.내일배움 캠프
         - Endpoint : `/api/schedule`
         - Request Syntax
           ```json
-            GET /api/schedule/{scheduleId} HTTP/1.1
+            GET /api/schedule HTTP/1.1
             Host: {localhost}
             Accept: application/json
         - Responses
@@ -83,17 +83,20 @@ feat.내일배움 캠프
                     "updatedTime": "YYYY-MM-DD HH:mm:ss",
                     "userName": "string",
                     "password": "string"
-                }
+                },
+                {
+                    ...
+                }...
             ]
             
       - **일정 수정**
         - HTTP Method : `PUT`
-        - Endpoint : `/api/schedule/{scheduleId}`
+        - Endpoint : `/api/schedule/{id}`
         - Path Parameters
             - scheduleId (String) : 수정하려는 일정의 고유 ID
         - Request Syntax
           ```json
-              PUT /api/schedule/{scheduleId} HTTP/1.1
+              PUT /api/schedule/{id} HTTP/1.1
               Host: {localhost}
               Accept: application/json
         - Request Body
@@ -119,12 +122,12 @@ feat.내일배움 캠프
 
       - **일정 삭제**
         - HTTP Method : `DELETE`
-        - Endpoint : `/api/schedule/{scheduleId}`
+        - Endpoint : `/api/schedule/{id}/{password}`
         - Path Parameters
             - scheduleId (String) : 삭제하려는 일정의 고유 ID
         - Request Syntax
           ```json
-            DELETE /api/schedule/{scheduleId} HTTP/1.1
+            DELETE /api/schedule/{id} HTTP/1.1
             Host: {localhost}
             Accept: application/json
         - Responses
