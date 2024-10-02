@@ -32,8 +32,8 @@ public class ScheduleController {
 
     // 일정 단건 조회
     @GetMapping("/{id}")
-    public ResponseEntity<ScheduleResponseDto> getSchedule(@PathVariable Long scheduleId) {
-        ScheduleResponseDto schedule = scheduleService.getScheduleById(scheduleId);
+    public ResponseEntity<ScheduleResponseDto> getSchedule(@PathVariable Long id) {
+        ScheduleResponseDto schedule = scheduleService.getScheduleById(id);
         return ResponseEntity.ok().body(schedule);
     }
 
