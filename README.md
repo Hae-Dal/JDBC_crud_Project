@@ -127,7 +127,7 @@ feat.내일배움 캠프
             - scheduleId (String) : 삭제하려는 일정의 고유 ID
         - Request Syntax
           ```json
-            DELETE /api/schedule/{id} HTTP/1.1
+            DELETE /api/schedule/{id}/{password} HTTP/1.1
             Host: {localhost}
             Accept: application/json
         - Responses
@@ -143,7 +143,7 @@ feat.내일배움 캠프
 
     - ERD(Entity Relationship Diagram)
 
-      ![](/read_me_img/erd.png)
+      ![](/read_me_img/erd.PNG)
 
 ### LV. 2 일정 생성 및 조회
 - 요구사항 정의
