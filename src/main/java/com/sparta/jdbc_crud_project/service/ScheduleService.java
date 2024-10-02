@@ -4,14 +4,17 @@ import com.sparta.jdbc_crud_project.dto.ScheduleRequestDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleResponseDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleSearchCriteria;
 import com.sparta.jdbc_crud_project.repository.ScheduleRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
+    @Autowired
     public ScheduleService(ScheduleRepository scheduleRepository) {
         this.scheduleRepository = scheduleRepository;
     }
@@ -32,7 +35,7 @@ public class ScheduleService {
         return scheduleRepository.update(scheduleRequestDto);
     }
 
-    public void deleteSchedule(Long scheduleId) {
-        scheduleRepository.delete(scheduleId);
+    public void deleteSchedule(Long id, String password) {
+        scheduleRepository.delete(id, password);
     }
 }

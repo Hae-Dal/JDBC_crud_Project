@@ -16,7 +16,7 @@ public class ScheduleResponseDto {
     private String content;
     private LocalDateTime postDate;
     private LocalDateTime updateDate;
-    private String userName;
+    private Long userId;
     private String password;
 
     public ScheduleResponseDto(Schedule schedule) {
@@ -25,8 +25,16 @@ public class ScheduleResponseDto {
         this.content = schedule.getContent();
         this.postDate = schedule.getPostDate();
         this.updateDate = schedule.getUpdateDate();
-        this.userName = schedule.getUserName();
-        this.password = schedule.getPassword();
+        this.userId = schedule.getUserId();
     }
 
+    public ScheduleResponseDto(Long id, String title, String content, LocalDateTime postDate, LocalDateTime updateDate, Long userId, String password) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.postDate = postDate;
+        this.updateDate = updateDate;
+        this.userId = userId;
+        this.password = password;
+    }
 }

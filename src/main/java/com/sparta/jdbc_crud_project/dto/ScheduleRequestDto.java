@@ -13,6 +13,6 @@ public class ScheduleRequestDto {
     private String content;
     private LocalDateTime postDate;
     private LocalDateTime updateDate;
-    private String userName;
+    private Long userId;
     private String password;
 }

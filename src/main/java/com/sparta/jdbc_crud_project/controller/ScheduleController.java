@@ -1,11 +1,11 @@
 package com.sparta.jdbc_crud_project.controller;
 
-import com.sparta.jdbc_crud_project.dto.ErrorResponseDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleRequestDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleResponseDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleSearchCriteria;
-import com.sparta.jdbc_crud_project.exception.InvalidPasswordException;
 import com.sparta.jdbc_crud_project.service.ScheduleService;
+import com.sparta.jdbc_crud_project.exception.InvalidPasswordException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +19,7 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
+    @Autowired
     public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
     }
@@ -58,15 +59,14 @@ public class ScheduleController {
             ScheduleResponseDto updatedSchedule = scheduleService.updateSchedule(scheduleRequestDto);
             return ResponseEntity.ok().body(updatedSchedule);
         } catch (InvalidPasswordException e) {
-            ErrorResponseDto errorResponse = new ErrorResponseDto(e.getMessage());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
         }
     }
 
     // 일정 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteSchedule(@PathVariable Long id) {
-        scheduleService.deleteSchedule(id);
+    @DeleteMapping("/{id}/{password}")
+    public ResponseEntity<?> deleteSchedule(@PathVariable Long id, @PathVariable String password) {
+        scheduleService.deleteSchedule(id, password);
         return ResponseEntity.ok().body(Map.of("message", "Schedule successfully deleted"));
     }
 }

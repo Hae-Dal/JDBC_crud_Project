@@ -5,6 +5,7 @@ import com.sparta.jdbc_crud_project.dto.ScheduleResponseDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleSearchCriteria;
 import com.sparta.jdbc_crud_project.entity.Schedule;
 import com.sparta.jdbc_crud_project.exception.InvalidPasswordException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -21,6 +22,7 @@ public class ScheduleRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
     public ScheduleRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -28,25 +30,20 @@ public class ScheduleRepository {
     // 일정 추가
     public ScheduleResponseDto save(ScheduleRequestDto scheduleRequestDto) {
         LocalDateTime now = LocalDateTime.now();
-        String sql = "INSERT INTO SCHEDULE (title, content, postDate, updatedDate, userName, password) VALUES (?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, scheduleRequestDto.getTitle(), scheduleRequestDto.getContent(), now, now, scheduleRequestDto.getUserName(), scheduleRequestDto.getPassword());
+        String sql = "INSERT INTO SCHEDULE (title, content, postDate, updatedDate, userId, password) VALUES (?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, scheduleRequestDto.getTitle(), scheduleRequestDto.getContent(), now, now, scheduleRequestDto.getUserId(), scheduleRequestDto.getPassword());
 
         Long scheduleId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Long.class);
-
-        scheduleRequestDto.setId(scheduleId);
-        scheduleRequestDto.setPostDate(now);
-        scheduleRequestDto.setUpdateDate(now);
-
-        return new ScheduleResponseDto(new Schedule(scheduleRequestDto));
+        return new ScheduleResponseDto(scheduleId, scheduleRequestDto.getTitle(), scheduleRequestDto.getContent(), now, now, scheduleRequestDto.getUserId(), scheduleRequestDto.getPassword());
     }
 
-    // 단건 일정 조회
+    // 일정 단건 조회
     public ScheduleResponseDto findById(Long scheduleId) {
-        String sql = "SELECT * FROM SCHEDULE WHERE id = ?";
+        String sql = "SELECT * FROM SCHEDULE WHERE scheduleID = ?";
         return jdbcTemplate.queryForObject(sql, new ScheduleRowMapper(), scheduleId);
     }
 
-    // 전체 일정 조회
+    // 일정 전체 조회
     public List<ScheduleResponseDto> findAll(ScheduleSearchCriteria criteria) {
         StringBuilder sql = new StringBuilder("SELECT * FROM SCHEDULE WHERE 1=1");
 
@@ -62,6 +59,7 @@ public class ScheduleRepository {
         return jdbcTemplate.query(sql.toString(), new ScheduleRowMapper(), getParams(criteria));
     }
 
+    // 조회 조건 검사
     private Object[] getParams(ScheduleSearchCriteria criteria) {
         if (criteria.getUpdatedDate() != null && criteria.getUserName() != null) {
             return new Object[]{LocalDate.parse(criteria.getUpdatedDate()), criteria.getUserName()};
@@ -76,30 +74,38 @@ public class ScheduleRepository {
 
     // 일정 수정
     public ScheduleResponseDto update(ScheduleRequestDto scheduleRequestDto) {
+        String sqlCheckPassword = "SELECT COUNT(*) FROM SCHEDULE WHERE scheduleID = ? AND password = ?";
+        Integer count = jdbcTemplate.queryForObject(sqlCheckPassword, Integer.class, scheduleRequestDto.getId(), scheduleRequestDto.getPassword());
 
-        String sqlCheckPassword = "SELECT password FROM SCHEDULE WHERE id = ?";
-        String existingPassword = jdbcTemplate.queryForObject(sqlCheckPassword, String.class, scheduleRequestDto.getId());
-
-        if (!Objects.requireNonNull(existingPassword).equals(scheduleRequestDto.getPassword())) {
-            throw new InvalidPasswordException("Invalid password");
+        if (count == null || count == 0) {
+            throw new InvalidPasswordException("Invalid username or password");
         }
 
-        String sqlGetSchedule = "SELECT * FROM SCHEDULE WHERE id = ?";
+        String sqlGetSchedule = "SELECT * FROM SCHEDULE WHERE scheduleID = ?";
         ScheduleResponseDto existingSchedule = jdbcTemplate.queryForObject(sqlGetSchedule, new ScheduleRowMapper(), scheduleRequestDto.getId());
 
         LocalDateTime now = LocalDateTime.now();
-        String sql = "UPDATE SCHEDULE SET content = ?, updatedDate = ?, userName = ? WHERE id = ?";
-        jdbcTemplate.update(sql, scheduleRequestDto.getContent(), now, scheduleRequestDto.getUserName(), scheduleRequestDto.getId());
+        String sql = "UPDATE SCHEDULE SET content = ?, updatedDate = ?, userId = ? WHERE scheduleID = ?";
+        jdbcTemplate.update(sql, scheduleRequestDto.getContent(), now, scheduleRequestDto.getUserId(), scheduleRequestDto.getId());
 
         scheduleRequestDto.setId(Objects.requireNonNull(existingSchedule).getId());
+        scheduleRequestDto.setTitle(existingSchedule.getTitle());
+        scheduleRequestDto.setPostDate(existingSchedule.getPostDate());
         scheduleRequestDto.setUpdateDate(now);
 
         return new ScheduleResponseDto(new Schedule(scheduleRequestDto));
     }
 
     // 일정 삭제
-    public void delete(Long scheduleId) {
-        String sql = "DELETE FROM SCHEDULE WHERE id = ?";
+    public void delete(Long scheduleId, String password) {
+        String sqlCheckPassword = "SELECT COUNT(*) FROM SCHEDULE WHERE scheduleID = ? AND password = ?";
+        Integer count = jdbcTemplate.queryForObject(sqlCheckPassword, Integer.class, scheduleId, password);
+
+        if (count == null || count == 0) {
+            throw new InvalidPasswordException("Invalid username or password");
+        }
+
+        String sql = "DELETE FROM SCHEDULE WHERE scheduleID = ?";
         jdbcTemplate.update(sql, scheduleId);
     }
 
@@ -107,15 +113,14 @@ public class ScheduleRepository {
         @Override
         public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
             ScheduleResponseDto schedule = new ScheduleResponseDto();
-            schedule.setId(rs.getLong("id"));
+            schedule.setId(rs.getLong("scheduleID"));
             schedule.setTitle(rs.getString("title"));
             schedule.setContent(rs.getString("content"));
             schedule.setPostDate(rs.getObject("postDate", LocalDateTime.class));
             schedule.setUpdateDate(rs.getObject("updatedDate", LocalDateTime.class));
-            schedule.setUserName(rs.getString("userName"));
+            schedule.setUserId(rs.getLong("userId"));
             schedule.setPassword(rs.getString("password"));
             return schedule;
         }
     }
 }
-
