@@ -14,7 +14,6 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
-    @Autowired
     public ScheduleService(ScheduleRepository scheduleRepository) {
         this.scheduleRepository = scheduleRepository;
     }
@@ -29,6 +28,15 @@ public class ScheduleService {
 
     public List<ScheduleResponseDto> getAllSchedules(ScheduleSearchCriteria criteria) {
         return scheduleRepository.findAll(criteria);
+    }
+
+    public List<ScheduleResponseDto> getAllSchedulesByPage(int page, int size) {
+        int offset = page * size;
+        return scheduleRepository.findAllByPage(offset, size);
+    }
+
+    public int countAllSchedules() {
+        return scheduleRepository.countAll();
     }
 
     public ScheduleResponseDto updateSchedule(ScheduleRequestDto scheduleRequestDto) {

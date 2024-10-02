@@ -5,7 +5,6 @@ import com.sparta.jdbc_crud_project.dto.ScheduleResponseDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleSearchCriteria;
 import com.sparta.jdbc_crud_project.entity.Schedule;
 import com.sparta.jdbc_crud_project.exception.InvalidPasswordException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -22,7 +21,6 @@ public class ScheduleRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
     public ScheduleRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -57,6 +55,18 @@ public class ScheduleRepository {
         sql.append(" ORDER BY updatedDate DESC");
 
         return jdbcTemplate.query(sql.toString(), new ScheduleRowMapper(), getParams(criteria));
+    }
+
+    // 페이지네이션을 적용한 일정 전체 조회
+    public List<ScheduleResponseDto> findAllByPage(int offset, int limit) {
+        String sql = "SELECT * FROM SCHEDULE ORDER BY updatedDate DESC LIMIT ? OFFSET ?";
+        return jdbcTemplate.query(sql, new ScheduleRowMapper(), limit, offset);
+    }
+
+    // 일정 수 조회
+    public int countAll() {
+        String sql = "SELECT COUNT(*) FROM SCHEDULE";
+        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
     // 조회 조건 검사
