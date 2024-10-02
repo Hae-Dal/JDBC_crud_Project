@@ -1,11 +1,11 @@
-package com.sparta.jdbc_crud_project.entitiy;
+package com.sparta.jdbc_crud_project.entity;
 
 import com.sparta.jdbc_crud_project.dto.ScheduleRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -14,8 +14,8 @@ public class Schedule {
     private Long scheduleId;
     private String title;
     private String content;
-    private Date postDate;
-    private Date updateDate;
+    private LocalDateTime postDate;
+    private LocalDateTime updateDate;
     private String userName;
     private String password;
 

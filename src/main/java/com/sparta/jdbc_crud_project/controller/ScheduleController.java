@@ -1,75 +1,66 @@
 package com.sparta.jdbc_crud_project.controller;
 
+import com.sparta.jdbc_crud_project.dto.ErrorResponseDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleRequestDto;
 import com.sparta.jdbc_crud_project.dto.ScheduleResponseDto;
-import com.sparta.jdbc_crud_project.entitiy.Schedule;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import com.sparta.jdbc_crud_project.dto.ScheduleUpdateRequestDto;
+import com.sparta.jdbc_crud_project.exception.InvalidPasswordException;
+import com.sparta.jdbc_crud_project.service.ScheduleService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.*;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/schedule")
 public class ScheduleController {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final ScheduleService scheduleService;
 
-    public ScheduleController(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public ScheduleController(ScheduleService scheduleService) {
+        this.scheduleService = scheduleService;
     }
 
     // 일정 생성
-    @PostMapping("/schedule")
-    public ScheduleResponseDto createSchedule(@RequestBody ScheduleRequestDto requestDto) {
-        // RequestDto -> Entity
-        Schedule schedule = new Schedule(requestDto);
-
-        // Store to DB
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        String sql = "INSERT INTO schedule (title, content, postDate, updatedDate, userName, password) VALUES (?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(con -> {
-            PreparedStatement preparedStatement = con.prepareStatement(sql,
-                    Statement.RETURN_GENERATED_KEYS);
-
-            preparedStatement.setString(1, schedule.getTitle());
-            preparedStatement.setString(2, schedule.getContent());
-            preparedStatement.setDate(3, schedule.getPostDate());
-            preparedStatement.setDate(4, schedule.getUpdateDate());
-            preparedStatement.setString(5, schedule.getUserName());
-            preparedStatement.setString(6, schedule.getPassword());
-
-            return preparedStatement;
-        }, keyHolder);
-
-        // Schedule Max ID Check
-        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        schedule.setScheduleId(id);
-
-        // Entity -> ResponseDto
-        return new ScheduleResponseDto(schedule);
+    @PostMapping
+    public ResponseEntity<ScheduleResponseDto> createSchedule(@RequestBody ScheduleRequestDto scheduleRequestDto) {
+        ScheduleResponseDto createdSchedule = scheduleService.createSchedule(scheduleRequestDto);
+        return ResponseEntity.ok().body(createdSchedule);
     }
 
-    // 일정 조회
-    @GetMapping("/schedule")
-    public List<ScheduleResponseDto> getSchedules() {
-        // DB Check
-        String sql = "SELECT * FROM schedules";
+    // 일정 단건 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<ScheduleResponseDto> getSchedule(@PathVariable Long scheduleId) {
+        ScheduleResponseDto schedule = scheduleService.getScheduleById(scheduleId);
+        return ResponseEntity.ok().body(schedule);
+    }
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Long id = rs.getLong("scheduleId");
-            String title = rs.getString("title");
-            String content = rs.getString("content");
-            Date postDate = rs.getDate("postDate");
-            Date updateDate = rs.getDate("updateDate");
-            String userName = rs.getString("userName");
-            String password = rs.getString("password");
-            return new ScheduleResponseDto(id, title, content, postDate, updateDate, userName, password);
-        });
+    // 전체 일정 조회
+    @GetMapping
+    public ResponseEntity<List<ScheduleResponseDto>> getAllSchedules() {
+        List<ScheduleResponseDto> schedules = scheduleService.getAllSchedules();
+        return ResponseEntity.ok().body(schedules);
+    }
+
+    // 일정 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateSchedule(@PathVariable Long id, @RequestBody ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
+        try {
+            scheduleUpdateRequestDto.setId(id);
+            ScheduleResponseDto updatedSchedule = scheduleService.updateSchedule(scheduleUpdateRequestDto);
+            return ResponseEntity.ok().body(updatedSchedule);
+        } catch (InvalidPasswordException e) {
+            ErrorResponseDto errorResponse = new ErrorResponseDto(e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+        }
+    }
+
+    // 일정 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteSchedule(@PathVariable Long id) {
+        scheduleService.deleteSchedule(id);
+        return ResponseEntity.ok().body(Map.of("message", "Schedule successfully deleted"));
     }
 }

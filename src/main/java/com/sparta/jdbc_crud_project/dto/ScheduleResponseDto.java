@@ -1,22 +1,26 @@
 package com.sparta.jdbc_crud_project.dto;
 
-import com.sparta.jdbc_crud_project.entitiy.Schedule;
+import com.sparta.jdbc_crud_project.entity.Schedule;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
+@Setter
+@NoArgsConstructor
 public class ScheduleResponseDto {
-    private Long scheduleId;
+    private Long id;
     private String title;
     private String content;
-    private Date postDate;
-    private Date updateDate;
+    private LocalDateTime postDate;
+    private LocalDateTime updateDate;
     private String userName;
     private String password;
 
     public ScheduleResponseDto(Schedule schedule) {
-        this.scheduleId = schedule.getScheduleId();
+        this.id = schedule.getScheduleId();
         this.title = schedule.getTitle();
         this.content = schedule.getContent();
         this.postDate = schedule.getPostDate();
@@ -25,8 +29,8 @@ public class ScheduleResponseDto {
         this.password = schedule.getPassword();
     }
 
-    public ScheduleResponseDto(Long id, String title, String content, java.sql.Date postDate, java.sql.Date updateDate, String userName, String password) {
-        this.scheduleId = id;
+    public ScheduleResponseDto(Long id, String title, String content, LocalDateTime postDate, LocalDateTime updateDate, String userName, String password) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.postDate = postDate;
