@@ -16,13 +16,13 @@ public class Schedule {
     private String content;
     private LocalDateTime postDate;
     private LocalDateTime updateDate;
-    private Long userId;
+    private Long userName;
 
     public Schedule(ScheduleRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
         this.postDate = LocalDateTime.now();
         this.updateDate = LocalDateTime.now();
-        this.userId = requestDto.getUserId();
+        this.userName = requestDto.getUserId();
     }
 }

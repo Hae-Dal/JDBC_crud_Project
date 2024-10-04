@@ -1,6 +1,5 @@
 package com.sparta.jdbc_crud_project.dto;
 
-import com.sparta.jdbc_crud_project.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,11 +16,11 @@ public class UserResponseDto {
     private LocalDateTime registrationDate;
     private LocalDateTime updatedDate;
 
-    public UserResponseDto(User user) {
-        this.userId = user.getUserId();
-        this.name = user.getName();
-        this.email = user.getEmail();
-        this.registrationDate = user.getRegistrationDate();
-        this.updatedDate = user.getUpdatedDate();
+    public UserResponseDto(Long userId, String name, String email, LocalDateTime registrationDate, LocalDateTime updatedDate) {
+        this.userId = userId;
+        this.name = name;
+        this.email = email;
+        this.registrationDate = registrationDate;
+        this.updatedDate = updatedDate;
     }
 }
