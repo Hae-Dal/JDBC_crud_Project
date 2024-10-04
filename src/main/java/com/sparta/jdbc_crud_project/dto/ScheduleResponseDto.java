@@ -20,7 +20,7 @@ public class ScheduleResponseDto {
     private String password;
 
     public ScheduleResponseDto(Schedule schedule) {
-        this.id = schedule.getScheduleId();
+        this.id = schedule.getScheduleID();
         this.title = schedule.getTitle();
         this.content = schedule.getContent();
         this.postDate = schedule.getPostDate();

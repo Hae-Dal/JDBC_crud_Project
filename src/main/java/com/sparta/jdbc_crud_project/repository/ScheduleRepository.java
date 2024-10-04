@@ -84,7 +84,7 @@ public class ScheduleRepository {
 
     // 일정 수정
     public ScheduleResponseDto update(ScheduleRequestDto scheduleRequestDto) {
-        String sqlCheckPassword = "SELECT COUNT(*) FROM SCHEDULE WHERE scheduleID = ? AND password = ?";
+        String sqlCheckPassword = "SELECT COUNT(*) FROM SCHEDULE WHERE password = ?";
         Integer count = jdbcTemplate.queryForObject(sqlCheckPassword, Integer.class, scheduleRequestDto.getId(), scheduleRequestDto.getPassword());
 
         if (count == null || count == 0) {
@@ -108,7 +108,7 @@ public class ScheduleRepository {
 
     // 일정 삭제
     public void delete(Long scheduleId, String password) {
-        String sqlCheckPassword = "SELECT COUNT(*) FROM SCHEDULE WHERE scheduleID = ? AND password = ?";
+        String sqlCheckPassword = "SELECT COUNT(*) FROM SCHEDULE WHERE password = ?";
         Integer count = jdbcTemplate.queryForObject(sqlCheckPassword, Integer.class, scheduleId, password);
 
         if (count == null || count == 0) {

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 public class Schedule {
-    private Long scheduleId;
+    private Long scheduleID;
     private String title;
     private String content;
     private LocalDateTime postDate;
