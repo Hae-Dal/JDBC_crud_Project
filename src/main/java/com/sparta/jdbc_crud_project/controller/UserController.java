@@ -3,7 +3,6 @@ package com.sparta.jdbc_crud_project.controller;
 import com.sparta.jdbc_crud_project.dto.UserRequestDto;
 import com.sparta.jdbc_crud_project.dto.UserResponseDto;
 import com.sparta.jdbc_crud_project.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +14,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }

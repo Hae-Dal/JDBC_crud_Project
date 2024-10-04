@@ -2,7 +2,6 @@ package com.sparta.jdbc_crud_project.repository;
 
 import com.sparta.jdbc_crud_project.dto.UserRequestDto;
 import com.sparta.jdbc_crud_project.dto.UserResponseDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -17,7 +16,6 @@ public class UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
     public UserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
